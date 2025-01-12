@@ -21,7 +21,15 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          docker rmi `docker images -q`
+          # 获取所有镜像的 ID
+          images=$(docker images -q)    
+          # 检查镜像列表是否为空
+          if [ -n "$images" ]; then
+              echo "Removing Docker images..."
+              docker rmi -f $images
+            else
+              echo "No Docker images to remove."
+          fi
           sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
           sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
       - name: Install Required Packages
