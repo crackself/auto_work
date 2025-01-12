@@ -175,8 +175,7 @@ jobs:
           pwd
           make image PACKAGES="${{ env.PACKAGES}}" FILES="../custom-files"
           echo "Generate Compileted"
-          echo "List files"
-          find ${{ env.SOURCES_PATH}}/bin/targets -type f
+
       - name: Prepare Artifact
       #创建目录：artifact,artifact/firmware,artifact/package,artifact/buildinfo
       # 移动bin/targets里的*.buildinfo文件到artifact/buildinfo目录，并命名为*.manifest
