@@ -16,6 +16,7 @@ jobs:
 
     name: Build OpenWrt Firmware
     runs-on: ubuntu-24.04
+    # https://github.com/actions/runner-images#available-images
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
@@ -74,6 +75,10 @@ jobs:
         run: |
           # 解压ImageBuilder.tar.xz
           tar -J -x -f openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64.tar.xz
+          # 检查当前路径
+          pwd
+          # 显示当前路径文件
+          ls
 
           # 将文件路径存入 GitHub Actions 环境变量
           echo "SOURCES_PATH=openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64" >> $GITHUB_ENV
@@ -82,7 +87,7 @@ jobs:
         run: |
           mkdir -pv {custom-files,custom-files/etc,custom-files/etc/uci-defaults}
           # touch custom-files/etc/uci-defaults/custom-files/etc/uci-defaults/99-custom
-          cat << EOF > custom-files/etc/uci-defaults/custom-files/etc/uci-defaults/99-custom
+          cat << EOF > 99-custom
             uci -q batch << EOI
             # 此处为uci命令
             # 通过uci设置Dnsmasq KMS规则，自动激活windows/office，配合vlmcs
