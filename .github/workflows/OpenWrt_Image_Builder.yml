@@ -1,0 +1,154 @@
+# 
+# <https://github.com/KFERMercer/OpenWrt-CI>
+# Copyright (C) 2019 P3TERX
+# Copyright (C) 2020 KFERMercer
+#
+name: OpenWrt_Image_Builder
+
+on:
+  workflow_dispatch:  # 允许手动触发工作流
+  # schedule:
+  #   每周一凌晨 3:00 执行
+  #   - cron: 00 03 * * 1
+
+jobs:
+  Build_Openwrt:
+    name: Build OpenWrt Firmware
+    runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id
+    steps:
+      - name: Space Cleanup
+      # 清理储存空间
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          docker rmi `docker images -q`
+          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
+          sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
+      - name: Install Required Packages
+      # 安装依赖工具
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo -E apt-get update
+          sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 unzip zlib1g-dev lib32gcc-s1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf swig libtinfo5
+          sudo -E apt-get -y autoremove --purge
+          sudo -E apt-get clean
+          df -h
+
+      - name: Get Current Stable OpenWrt Version
+        run: |
+          # 使用 curl 获取页面内容并查找包含 "The current stable OpenWrt" 的行
+          stable_info=$(curl -s https://downloads.openwrt.org/ | grep -i "The current stable OpenWrt")
+          
+          # 使用 awk 提取版本号
+          stable_version=$(echo $stable_info | awk -F "The current stable OpenWrt" '{print $2}' | awk '{print $1}')
+          
+          echo "The latest stable OpenWrt version is: $stable_version"
+          
+          # 将版本号存入 GitHub Actions 环境变量
+          echo "LATEST_STABLE_OPENWRT_VERSION=$stable_version" >> $GITHUB_ENV
+
+      - name: Display Latest Stable OpenWrt Version
+        run: |
+          echo "The latest stable OpenWrt version is ${{ env.LATEST_STABLE_OPENWRT_VERSION }}"
+
+      - name: Download Image Builder
+        run: |
+          # 使用 wget 下载指定的文件
+          wget https://downloads.openwrt.org/releases/${{ env.LATEST_STABLE_OPENWRT_VERSION }}/targets/x86/64/openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64.tar.xz
+          
+          # 确保文件已成功下载
+          ls -lh openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64.tar.xz
+
+      - name: Untar Image Builder
+        run: |
+          
+          
+          # 检查文件
+          ls -l ImageBuilder
+
+      - name: Prepar Files
+        run: |
+          # 解压ImageBuilder.tar.xz
+          tar -J -x -f openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64.tar.xz
+          mkdir -pv {custom-files,custom-files/etc,custom-files/etc/uci-defaults}
+          # touch custom-files/etc/uci-defaults/custom-files/etc/uci-defaults/99-custom
+          cat << EOF > custom-files/etc/uci-defaults/custom-files/etc/uci-defaults/99-custom
+            uci -q batch << EOI
+            # 此处为uci命令
+            # 通过uci设置Dnsmasq KMS规则，自动激活windows/office，配合vlmcs
+            add dhcp srvhost
+            set dhcp.@srvhost[-1].srv="_vlmcs._tcp.lan"
+            set dhcp.@srvhost[-1].target="OpenWrt.lan"
+            set dhcp.@srvhost[-1].port="1688"
+            set dhcp.@srvhost[-1].class="0"
+            set dhcp.@srvhost[-1].weight="100"
+            commit dhcp
+
+            # 允许外网访问docker内部网络
+            set dockerd.firewall.extra_iptables_args='--match conntrack ! --ctstate RELATED,ESTABLISHED'
+            commit dockerd
+
+            # 修改LAN地址为192.168.100.1
+            set network.lan.ipaddr='192.168.100.1'
+            commit network
+            # uci命令结束
+            EOI
+            /etc/init.d/dnsmasq restart
+            /etc/init.d/network reload
+          EOF
+          # 调整root分区大小
+          sed -i 's/^CONFIG_TARGET_ROOTFS_PARTSIZE=104$/CONFIG_TARGET_ROOTFS_PARTSIZE=2048/' openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64/.config
+          # 修改编译信息
+          sed -i 's/^CONFIG_KERNEL_BUILD_USER="builder"$/CONFIG_KERNEL_BUILD_USER="GithubAction"/' openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64/.config
+          sed -i 's/^CONFIG_KERNEL_BUILD_DOMAIN="buildhost"$/CONFIG_KERNEL_BUILD_DOMAIN="Ubuntu"/' openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64/.config
+          # 修改GRUB引导名
+          sed -i 's/^CONFIG_GRUB_TITLE="OpenWrt"$/CONFIG_GRUB_TITLE="My-Router"/' openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64/.config
+          # 修改GRUB超时秒数
+          sed -i 's/^CONFIG_GRUB_TIMEOUT="5"$/CONFIG_GRUB_TIMEOUT="2"/' openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64/.config
+
+      - name: Generate Image
+        run: |
+          cd openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64
+          pwd
+          make image PACKAGES="-firewall4 -dnsmasq -ppp -ppp-mod-pppoe -kmod-amazon-ena -kmod-amd-xgbe -kmod-bnx2 -kmod-button-hotplug -kmod-r8169 -kmod-tg3 -libustream-wolfssl -libustream-mbedtls -grub2-bios-setup firewall dnsmasq-full ipset lsblk fdisk losetup resize2fs nano kmod-tcp-bbr kmod-ipt-tproxy kmod-ipt-nat6 kmod-nf-tproxy kmod-ipt-raw kmod-ipt-conntrack ip-full iptables iptables-zz-legacy iptables-mod-iprange iptables-mod-socket kmod-ipt-nat iptables-mod-tproxy iptables-mod-filter iptables-mod-conntrack-extra iptables-mod-u32 iptables-mod-extra wget-ssl kmod-nft-socket kmod-nft-tproxy libustream-openssl curl wpad-openssl ca-bundle ca-certificates dockerd luci luci-i18n-base-zh-cn luci-theme-material luci-i18n-dockerman-zh-cn luci-i18n-opkg-zh-cn luci-i18n-nlbwmon-zh-cn luci-i18n-firewall-zh-cn iw iwinfo e100-firmware iwlwifi-firmware-ax210 kmod-iwlwifi pciutils kmod-inet-diag kmod-tun sing-box" FILES="../custom-files"
+
+      - name: Prepare Artifact
+      #创建目录：artifact,artifact/firmware,artifact/package,artifact/buildinfo
+      # 移动bin/targets里的*.buildinfo文件到artifact/buildinfo目录，并命名为*.manifest
+      # 复制bin/targets里的文件到artifact/firmware/目录
+        run: |
+          pwd
+          ls
+          mkdir -p {artifact,artifact/firmware,artifact/package,artifact/buildinfo}
+          mv -fv $(find openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64/bin/targets -type f -name "*.buildinfo" -o -name "*.manifest") artifact/buildinfo/
+          cp -rfv $(find openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64/bin/targets -type f) artifact/firmware/
+      - name: Upload Buildinfo
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenWrt_buildinfo
+          path: artifact/buildinfo/
+      - name: Upload Firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenWrt_firmware
+          path: artifact/firmware
+      # 废弃功能
+      # - name: Create Release
+      #   id: create_release
+      #   uses: actions/create-release@v1
+      #   with:
+      #     tag_name: ${{ github.ref_name }} # 使用当前推送的标签名
+      #     release_name: "Release ${{ github.ref_name }}"
+      #     draft: false
+      #     prerelease: false
+      #     token: ${{ secrets.RELEASE }}
+      # - name: Upload release asset
+      #   if: github.event == 'release'
+      #   uses: svenstaro/upload-release-action@v1
+      #   with:
+      #     repo_token: ${{ secrets.RELEASE }}
+      #     file: artifact/firmware/*
+      #     tag: ${{ github.ref }}
+      #     file_glob: true
