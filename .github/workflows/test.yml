@@ -1,0 +1,24 @@
+name: test
+
+on:
+  workflow_dispatch:  # 允许手动触发工作流
+  # schedule:
+  #   每周一凌晨 3:00 执行
+  #   - cron: 00 03 * * 1
+
+jobs:
+  Build_Openwrt:
+
+    name: Build OpenWrt Firmware
+    runs-on: ubuntu-24.04
+    # https://github.com/actions/runner-images#available-images
+    if: github.event.repository.owner.id == github.event.sender.id
+
+    steps:
+      - name: test various
+        run: |
+          # 获取删除列表+添加列表
+          content=$(cat openwrt/{del_packages,add_packages} | tr '\n' ' ')
+          echo "PACKAGES=$content" >> $GITHUB_ENV
+          # 打印PACKAGES
+          echo "$PACKAGES"
