@@ -100,7 +100,7 @@ jobs:
           pwd
 
           echo "generate custom-files/etc/uci-defaults/99-custom file"
-          cat << EOF > 99-custom
+          cat << EOF > custom-files/etc/uci-defaults/99-custom
             uci -q batch << EOI
             # 此处为uci命令
             # 通过uci设置Dnsmasq KMS规则，自动激活windows/office，配合vlmcs
@@ -125,8 +125,9 @@ jobs:
             /etc/init.d/network reload
           EOF
           
-          echo "Check current path"
+          echo "Check current path files"
           pwd
+          ls custom-files/etc/uci-defaults
 
       - name: Custom Image Configuration
         run: |
