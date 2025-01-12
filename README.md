@@ -1,4 +1,4 @@
-### Openwrt_Imaage_Builder 
+### Openwrt_Image_Builder 
 通过GitHub Actions 快速构建Openwrt x86-64固件，耗时10Min
 
 - 通过修改[**`openwrt/del_packages`**](https://github.com/crackself/auto_work/blob/main/openwrt/del_packages)/[**`openwrt/add_packages`**](https://github.com/crackself/auto_work/blob/main/openwrt/add_packages)设定移除/集成软件包
