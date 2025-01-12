@@ -38,8 +38,9 @@ jobs:
 
       - name: Get Current Stable OpenWrt Version
         run: |
-          # 通过curl查找最新稳定版本号
+          # 通过curl查找最新版本号
           stable_version=$(curl -s https://downloads.openwrt.org/ | grep -oP '(?<=releases/)[^/]+(?=/targets)' | head -n 1)
+          
           echo "The latest stable OpenWrt version is: $stable_version"
           
           # 将版本号存入 GitHub Actions 环境变量
@@ -57,12 +58,15 @@ jobs:
           # 确保文件已成功下载
           ls -lh openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64.tar.xz
 
-      - name: Untar Image_Builder
+      - name: Untar Image Builder
         run: |
           # 解压ImageBuilder.tar.xz
           tar -J -x -f openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64.tar.xz
 
-      - name: Prepar Custom Files
+          # 将文件路径存入 GitHub Actions 环境变量
+          echo "SOURCES_PATH=openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64" >> $GITHUB_ENV
+
+      - name: Prepar Files
         run: |
           mkdir -pv {custom-files,custom-files/etc,custom-files/etc/uci-defaults}
           # touch custom-files/etc/uci-defaults/custom-files/etc/uci-defaults/99-custom
@@ -91,18 +95,18 @@ jobs:
             /etc/init.d/network reload
           EOF
           # 调整root分区大小
-          sed -i 's/^CONFIG_TARGET_ROOTFS_PARTSIZE=104$/CONFIG_TARGET_ROOTFS_PARTSIZE=2048/' openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64/.config
+          sed -i 's/^CONFIG_TARGET_ROOTFS_PARTSIZE=104$/CONFIG_TARGET_ROOTFS_PARTSIZE=2048/' ${{ env.SOURCES_PATH}}/.config
           # 修改编译信息
-          sed -i 's/^CONFIG_KERNEL_BUILD_USER="builder"$/CONFIG_KERNEL_BUILD_USER="GithubAction"/' openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64/.config
-          sed -i 's/^CONFIG_KERNEL_BUILD_DOMAIN="buildhost"$/CONFIG_KERNEL_BUILD_DOMAIN="Ubuntu"/' openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64/.config
+          sed -i 's/^CONFIG_KERNEL_BUILD_USER="builder"$/CONFIG_KERNEL_BUILD_USER="GithubAction"/' ${{ env.SOURCES_PATH}}/.config
+          sed -i 's/^CONFIG_KERNEL_BUILD_DOMAIN="buildhost"$/CONFIG_KERNEL_BUILD_DOMAIN="Ubuntu"/' ${{ env.SOURCES_PATH}}/.config
           # 修改GRUB引导名
-          sed -i 's/^CONFIG_GRUB_TITLE="OpenWrt"$/CONFIG_GRUB_TITLE="My-Router"/' openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64/.config
+          sed -i 's/^CONFIG_GRUB_TITLE="OpenWrt"$/CONFIG_GRUB_TITLE="My-Router"/' ${{ env.SOURCES_PATH}}/.config
           # 修改GRUB超时秒数
-          sed -i 's/^CONFIG_GRUB_TIMEOUT="5"$/CONFIG_GRUB_TIMEOUT="2"/' openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64/.config
+          sed -i 's/^CONFIG_GRUB_TIMEOUT="5"$/CONFIG_GRUB_TIMEOUT="2"/' ${{ env.SOURCES_PATH}}/.config
 
       - name: Generate Image
         run: |
-          cd openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64
+          cd ${{ env.SOURCES_PATH}}
           pwd
           make image PACKAGES="-firewall4 -dnsmasq -ppp -ppp-mod-pppoe -kmod-amazon-ena -kmod-amd-xgbe -kmod-bnx2 -kmod-button-hotplug -kmod-r8169 -kmod-tg3 -libustream-wolfssl -libustream-mbedtls -grub2-bios-setup firewall dnsmasq-full ipset lsblk fdisk losetup resize2fs nano kmod-tcp-bbr kmod-ipt-tproxy kmod-ipt-nat6 kmod-nf-tproxy kmod-ipt-raw kmod-ipt-conntrack ip-full iptables iptables-zz-legacy iptables-mod-iprange iptables-mod-socket kmod-ipt-nat iptables-mod-tproxy iptables-mod-filter iptables-mod-conntrack-extra iptables-mod-u32 iptables-mod-extra wget-ssl kmod-nft-socket kmod-nft-tproxy libustream-openssl curl wpad-openssl ca-bundle ca-certificates dockerd luci luci-i18n-base-zh-cn luci-theme-material luci-i18n-dockerman-zh-cn luci-i18n-opkg-zh-cn luci-i18n-nlbwmon-zh-cn luci-i18n-firewall-zh-cn iw iwinfo e100-firmware iwlwifi-firmware-ax210 kmod-iwlwifi pciutils kmod-inet-diag kmod-tun sing-box" FILES="../custom-files"
 
@@ -114,8 +118,8 @@ jobs:
           pwd
           ls
           mkdir -p {artifact,artifact/firmware,artifact/package,artifact/buildinfo}
-          mv -fv $(find openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64/bin/targets -type f -name "*.buildinfo" -o -name "*.manifest") artifact/buildinfo/
-          cp -rfv $(find openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64/bin/targets -type f) artifact/firmware/
+          mv -fv $(find ${{ env.SOURCES_PATH}}/bin/targets -type f -name "*.buildinfo" -o -name "*.manifest") artifact/buildinfo/
+          cp -rfv $(find ${{ env.SOURCES_PATH}}/bin/targets -type f) artifact/firmware/
       - name: Upload Buildinfo
         uses: actions/upload-artifact@v4
         with:
