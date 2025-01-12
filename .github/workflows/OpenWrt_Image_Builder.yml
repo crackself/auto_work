@@ -59,15 +59,13 @@ jobs:
 
       - name: Untar Image Builder
         run: |
-          
-          
+          # 解压ImageBuilder.tar.xz
+          tar -J -x -f openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64.tar.xz
           # 检查文件
           ls -l ImageBuilder
 
-      - name: Prepar Files
+      - name: Prepar Custom Files
         run: |
-          # 解压ImageBuilder.tar.xz
-          tar -J -x -f openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64.tar.xz
           mkdir -pv {custom-files,custom-files/etc,custom-files/etc/uci-defaults}
           # touch custom-files/etc/uci-defaults/custom-files/etc/uci-defaults/99-custom
           cat << EOF > custom-files/etc/uci-defaults/custom-files/etc/uci-defaults/99-custom
