@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: test various
         run: |
+          pwd
+          ls
           # 获取删除列表+添加列表
           content=$(cat openwrt/{del_packages,add_packages} | tr '\n' ' ')
           echo "PACKAGES=$content" >> $GITHUB_ENV
