@@ -66,19 +66,29 @@ jobs:
       - name: Download Image Builder
         run: |
           # 使用 wget 下载指定的文件
+          echo "Downloading Image_Builder tar file"
           wget https://downloads.openwrt.org/releases/${{ env.LATEST_STABLE_OPENWRT_VERSION }}/targets/x86/64/openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64.tar.xz
           
           # 确保文件已成功下载
+          echo "Show downloaded file"
           ls -lh openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64.tar.xz
 
       - name: Untar Image Builder
         run: |
           # 解压ImageBuilder.tar.xz
+          echo "Untar Image_Builder tar file"
           tar -J -x -f openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64.tar.xz
+
           # 检查当前路径
+          echo "Check current path"
           pwd
+
           # 显示当前路径文件
+          echo "list current path files"
           ls
+
+          echo "Remove tarball after untar"
+          rm openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64.tar.xz
 
           # 将文件路径存入 GitHub Actions 环境变量
           echo "SOURCES_PATH=openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64" >> $GITHUB_ENV
@@ -86,7 +96,10 @@ jobs:
       - name: Prepar Files
         run: |
           mkdir -pv {custom-files,custom-files/etc,custom-files/etc/uci-defaults}
-          # touch custom-files/etc/uci-defaults/custom-files/etc/uci-defaults/99-custom
+          echo "Check current path"
+          pwd
+
+          echo "generate custom-files/etc/uci-defaults/99-custom file"
           cat << EOF > 99-custom
             uci -q batch << EOI
             # 此处为uci命令
@@ -111,6 +124,12 @@ jobs:
             /etc/init.d/dnsmasq restart
             /etc/init.d/network reload
           EOF
+          
+          echo "Check current path"
+          pwd
+
+      - name: Custom Image Configuration
+        run: |
           # 调整root分区大小
           sed -i 's/^CONFIG_TARGET_ROOTFS_PARTSIZE=104$/CONFIG_TARGET_ROOTFS_PARTSIZE=2048/' ${{ env.SOURCES_PATH}}/.config
           # 修改编译信息
@@ -123,20 +142,33 @@ jobs:
 
       - name: Generate Image
         run: |
+          echo "Check current path"
+          pwd
+
+          echo "Go to source path"
           cd ${{ env.SOURCES_PATH}}
+
+          echo "Generating..."
           pwd
           make image PACKAGES="-firewall4 -dnsmasq -ppp -ppp-mod-pppoe -kmod-amazon-ena -kmod-amd-xgbe -kmod-bnx2 -kmod-button-hotplug -kmod-r8169 -kmod-tg3 -libustream-wolfssl -libustream-mbedtls -grub2-bios-setup firewall dnsmasq-full ipset lsblk fdisk losetup resize2fs nano kmod-tcp-bbr kmod-ipt-tproxy kmod-ipt-nat6 kmod-nf-tproxy kmod-ipt-raw kmod-ipt-conntrack ip-full iptables iptables-zz-legacy iptables-mod-iprange iptables-mod-socket kmod-ipt-nat iptables-mod-tproxy iptables-mod-filter iptables-mod-conntrack-extra iptables-mod-u32 iptables-mod-extra wget-ssl kmod-nft-socket kmod-nft-tproxy libustream-openssl curl wpad-openssl ca-bundle ca-certificates dockerd luci luci-i18n-base-zh-cn luci-theme-material luci-i18n-dockerman-zh-cn luci-i18n-opkg-zh-cn luci-i18n-nlbwmon-zh-cn luci-i18n-firewall-zh-cn iw iwinfo e100-firmware iwlwifi-firmware-ax210 kmod-iwlwifi pciutils kmod-inet-diag kmod-tun sing-box" FILES="../custom-files"
+
+          echo "Generate Compileted"
+
+          echo "List targets"
+          ls ${{ env.SOURCES_PATH}}/bin/targets
 
       - name: Prepare Artifact
       #创建目录：artifact,artifact/firmware,artifact/package,artifact/buildinfo
       # 移动bin/targets里的*.buildinfo文件到artifact/buildinfo目录，并命名为*.manifest
       # 复制bin/targets里的文件到artifact/firmware/目录
         run: |
+          echo "Check current path"
           pwd
-          ls
+
+          echo "Prepare Artifact"
           mkdir -p {artifact,artifact/firmware,artifact/package,artifact/buildinfo}
           mv -fv $(find ${{ env.SOURCES_PATH}}/bin/targets -type f -name "*.buildinfo" -o -name "*.manifest") artifact/buildinfo/
-          cp -rfv $(find ${{ env.SOURCES_PATH}}/bin/targets -type f) artifact/firmware/
+          mv -rfv $(find ${{ env.SOURCES_PATH}}/bin/targets -type f) artifact/firmware/
       - name: Upload Buildinfo
         uses: actions/upload-artifact@v4
         with:
