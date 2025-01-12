@@ -38,12 +38,8 @@ jobs:
 
       - name: Get Current Stable OpenWrt Version
         run: |
-          # 使用 curl 获取页面内容并查找包含 "The current stable OpenWrt" 的行
-          stable_info=$(curl -s https://downloads.openwrt.org/ | grep -i "The current stable OpenWrt")
-          
-          # 使用 awk 提取版本号
-          stable_version=$(echo $stable_info | awk -F "The current stable OpenWrt" '{print $2}' | awk '{print $1}')
-          
+          # 通过curl查找最新稳定版本号
+          stable_version=$(curl -s https://downloads.openwrt.org/ | grep -oP '(?<=releases/)[^/]+(?=/targets)' | head -n 1)
           echo "The latest stable OpenWrt version is: $stable_version"
           
           # 将版本号存入 GitHub Actions 环境变量
