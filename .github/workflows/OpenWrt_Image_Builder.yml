@@ -154,7 +154,7 @@ jobs:
       - name: Custom Image Configuration
         run: |
           # 调整root分区大小
-          sed -i 's/^CONFIG_TARGET_ROOTFS_PARTSIZE=104$/CONFIG_TARGET_ROOTFS_PARTSIZE=2048/' ${{ env.SOURCES_PATH}}/.config
+          sed -i 's/^CONFIG_TARGET_ROOTFS_PARTSIZE=104$/CONFIG_TARGET_ROOTFS_PARTSIZE=500/' ${{ env.SOURCES_PATH}}/.config
           # 修改编译信息
           sed -i 's/^CONFIG_KERNEL_BUILD_USER="builder"$/CONFIG_KERNEL_BUILD_USER="GithubAction"/' ${{ env.SOURCES_PATH}}/.config
           sed -i 's/^CONFIG_KERNEL_BUILD_DOMAIN="buildhost"$/CONFIG_KERNEL_BUILD_DOMAIN="Ubuntu"/' ${{ env.SOURCES_PATH}}/.config
