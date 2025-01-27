@@ -9,9 +9,10 @@ nano
 sing-box
 e100-firmware
 iwlwifi-firmware-ax210
-
-tcpdump cshark luci-app-cshark
-
+tcpdump
+cshark
+luci
+luci-app-cshark
 luci-i18n-base-zh-cn
 luci-theme-material
 luci-i18n-dockerman-zh-cn
