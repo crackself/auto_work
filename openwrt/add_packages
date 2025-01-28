@@ -13,7 +13,11 @@ wget-ssl
 curl
 wpad-openssl
 nano
+
 tcpdump
+cshark
+luci-app-cshark
+luci-i18n-cshark-zh-cn
 
 kmod-inet-diag
 kmod-netlink-diag
