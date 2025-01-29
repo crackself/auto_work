@@ -15,37 +15,11 @@ curl
 wpad-openssl
 nano
 
-kmod-ipt-nat
-kmod-ipt-raw
-kmod-tcp-bbr
-kmod-ipt-nat6
-kmod-ipt-tproxy
-kmod-ipt-conntrack
-kmod-nf-tproxy
-kmod-nft-socket
-kmod-nft-tproxy
-
-ip-full
-
-iptables
-iptables-mod-u32
-iptables-zz-legacy
-iptables-mod-filter
-iptables-mod-extra
-iptables-mod-socket
-iptables-mod-tproxy
-iptables-mod-iprange
-iptables-mod-conntrack-extra
-
 tcpdump
-cshark
-luci-app-cshark
-luci-i18n-cshark-zh-cn
 
 kmod-inet-diag
 kmod-netlink-diag
 kmod-tun
-iptables-nft
 sing-box
 
 e100-firmware
