@@ -5,7 +5,7 @@ luci-i18n-opkg-zh-cn
 luci-i18n-nlbwmon-zh-cn
 luci-i18n-firewall-zh-cn
 
-firewall
+fish
 dnsmasq-full
 iw
 iwinfo
