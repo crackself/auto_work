@@ -1,2 +1,4 @@
 -dnsmasq
 -firewall4
+-libustream-wolfssl
+-grub2-bios-setup
