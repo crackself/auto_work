@@ -1,5 +1,1 @@
 -dnsmasq
--firewall4
--libustream-wolfssl
--libustream-mbedtls
--grub2-bios-setup
