@@ -5,6 +5,7 @@ luci-i18n-opkg-zh-cn
 luci-i18n-nlbwmon-zh-cn
 luci-i18n-firewall-zh-cn
 
+firewall
 dnsmasq-full
 iw
 iwinfo
@@ -13,6 +14,28 @@ wget-ssl
 curl
 wpad-openssl
 nano
+
+kmod-ipt-nat
+kmod-ipt-raw
+kmod-tcp-bbr
+kmod-ipt-nat6
+kmod-ipt-tproxy
+kmod-ipt-conntrack
+kmod-nf-tproxy
+kmod-nft-socket
+kmod-nft-tproxy
+
+ip-full
+
+iptables
+iptables-mod-u32
+iptables-zz-legacy
+iptables-mod-filter
+iptables-mod-extra
+iptables-mod-socket
+iptables-mod-tproxy
+iptables-mod-iprange
+iptables-mod-conntrack-extra
 
 tcpdump
 cshark
