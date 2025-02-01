@@ -133,7 +133,7 @@ jobs:
           cd ${{ env.SOURCES_PATH}}
           
           echo "Execute Modify_config"
-          bash openwrt/modify_config.sh
+          bash modify_config.sh
 
       - name: Generate Image...
         run: |
