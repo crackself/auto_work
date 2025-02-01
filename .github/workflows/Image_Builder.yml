@@ -129,10 +129,10 @@ jobs:
           echo "Prepar Shell File"
           mv openwrt/modify_config.sh ${{ env.SOURCES_PATH}}/
 
-          echo "Go The o Sources Path"
+          echo "Go The Sources Path"
           cd ${{ env.SOURCES_PATH}}
           
-          echo "Execute
+          echo "Execute Modify_config"
           bash openwrt/modify_config.sh
 
       - name: Generate Image...
