@@ -102,9 +102,17 @@ jobs:
 
       - name: 解压Image Builder
         run: |
-          # 解压ImageBuilder.tar.xz
+          # 解压ImageBuilder压缩文件
           echo "Untar Image_Builder tar file"
-          tar -J -x -f openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64.$EXT
+          # 根据 EXT 判断并执行解压命令
+          if [ "$EXT" == "tar.zst" ]; then
+            tar -I zstd -x -f openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64.$EXT
+          elif [ "$EXT" == "tar.xz" ]; then
+            tar -J -x -f openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64.$EXT
+          else
+            echo "Unsupported EXT: $EXT"
+            exit 1
+          fi
 
           # 检查当前路径
           echo "Check current path"
