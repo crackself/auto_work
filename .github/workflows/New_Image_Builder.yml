@@ -13,14 +13,13 @@ on:
 jobs:
   Build_Openwrt:
 
-    name: New Build OpenWrt Firmware
+    name: 快速生成OpenWrt x86_64 固件
     runs-on: ubuntu-24.04
     # https://github.com/actions/runner-images#available-images
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
-      - name: Space Cleanup
-      # 清理储存空间
+      - name: 磁盘空间清理
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
@@ -37,8 +36,8 @@ jobs:
 
           sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /usr/local/lib/android
           sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
-      - name: Install Required Packages
-      # 安装依赖工具
+      
+      - name: 安装依赖工具包
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
@@ -46,16 +45,19 @@ jobs:
           sudo -E apt-get -y install build-essential clang flex bison g++ gawk gcc-multilib g++-multilib gettext git libncurses5-dev libssl-dev python3-setuptools rsync swig unzip zlib1g-dev file wget
           sudo -E apt-get -y autoremove --purge
           sudo -E apt-get clean
+          
+          echo "显示磁盘使用情况"
+          
           df -h
 
-      - name: Checkout Branch Sources
+      - name: Git获取源码
         uses: actions/checkout@v4
         # 使用说明https://github.com/actions/checkout
         with:
           # 指定分支 留空使用默认分支
           ref: ''
 
-      - name: Get Current Stable OpenWrt Version
+      - name: 检测最新稳定版版本号
         run: |
           # 通过curl查找最新版本号
           stable_version=$(curl -s https://downloads.openwrt.org/ | grep -oP '(?<=releases/)[^/]+(?=/targets)' | head -n 1)
@@ -65,21 +67,37 @@ jobs:
           # 将版本号存入 GitHub Actions 环境变量
           echo "LATEST_STABLE_OPENWRT_VERSION=$stable_version" >> $GITHUB_ENV
 
-      - name: Display Latest Stable OpenWrt Version
+      - name: 显示最新版本号
         run: |
           echo "The latest stable OpenWrt version is ${{ env.LATEST_STABLE_OPENWRT_VERSION }}"
 
-      - name: Download Image Builder
+      - name: 下载Image Builder工具
         run: |
-          # 使用 wget 下载指定的文件
+          # 根据版本检测压缩文件后缀，24.10版起为.tar.zst
+          echo "Determining the correct file extension..."
+          
+          # 解析主版本号和次版本号
+          major_version=$(echo "${{ env.LATEST_STABLE_OPENWRT_VERSION }}" | cut -d'.' -f1)
+          minor_version=$(echo "${{ env.LATEST_STABLE_OPENWRT_VERSION }}" | cut -d'.' -f2)
+          
+          # 判断 OpenWrt 版本是否 >= 24.10
+          if [ "$major_version" -gt 24 ] || { [ "$major_version" -eq 24 ] && [ "$minor_version" -ge 10 ]; }; then
+            EXT="tar.zst"
+          else
+            EXT="tar.xz"
+          fi
+
+          echo "Downloading Image_Builder with extension: $EXT"
+          
+          # 使用 wget下载
           echo "Downloading Image_Builder tar file"
-          wget https://downloads.openwrt.org/releases/${{ env.LATEST_STABLE_OPENWRT_VERSION }}/targets/x86/64/openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64.tar.xz
+          wget https://downloads.openwrt.org/releases/${{ env.LATEST_STABLE_OPENWRT_VERSION }}/targets/x86/64/openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64.$EXT
           
           # 确保文件已成功下载
           echo "Show downloaded file"
           ls -lh openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64.tar.xz
 
-      - name: Untar Image Builder
+      - name: 解压Image Builder
         run: |
           # 解压ImageBuilder.tar.xz
           echo "Untar Image_Builder tar file"
@@ -99,19 +117,19 @@ jobs:
           # 将文件路径存入 GitHub Actions 环境变量
           echo "SOURCES_PATH=openwrt-imagebuilder-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-x86-64.Linux-x86_64" >> $GITHUB_ENV
 
-      - name: Prepar Custom Files Directory
+      - name: 准备Custom Files文件
         run: |
           mkdir -pv {custom-files,custom-files/etc,custom-files/etc/uci-defaults}
           echo "Check current path"
           pwd
 
-      - name: Copy First Boot Init Files Into Position
+      - name: 复制OpenWrt系统初始化脚本
         run: |
           mv -v openwrt/99-custom custom-files/etc/uci-defaults/
           echo "Check custom-files/etc/uci-defaults/ files"
           ls custom-files/etc/uci-defaults
 
-      - name: Prepar Openwrt Packages List
+      - name: 设置预装软件包
         run: |
           pwd
           ls
@@ -119,12 +137,12 @@ jobs:
           content=$(cat openwrt/del_packages openwrt/add_packages | tr '\n' ' ')
           echo "PACKAGES=$content" >> $GITHUB_ENV
 
-      - name: Display Openwrt Packages List
+      - name: 显示预装软件明细
         run: |
           echo "Combined package: $PACKAGES"
           echo "$PACKAGES"
 
-      - name: Modify Image Configuration
+      - name: 修改OpenWrt系统配置文件
         run: |
           echo "Prepar Shell File"
           mv openwrt/modify_config.sh ${{ env.SOURCES_PATH}}/
@@ -135,7 +153,7 @@ jobs:
           echo "Execute Modify_config"
           bash modify_config.sh
 
-      - name: Generate Image...
+      - name: 生成固件中...
         run: |
           echo "Check current path"
           pwd
@@ -148,7 +166,7 @@ jobs:
           make image PACKAGES="${{ env.PACKAGES}}" FILES="../custom-files"
           echo "Generate Compileted"
 
-      - name: Prepare Artifact
+      - name: 创建Artifact附件
       #创建目录：artifact,artifact/firmware,artifact/package,artifact/buildinfo
       # 移动bin/targets里的*.buildinfo文件到artifact/buildinfo目录，并命名为*.manifest
       # 复制bin/targets里的文件到artifact/firmware/目录
@@ -160,12 +178,12 @@ jobs:
           mkdir -p {artifact,artifact/firmware,artifact/package,artifact/buildinfo}
           mv -fv $(find ${{ env.SOURCES_PATH}}/bin/targets -type f -name "*.buildinfo" -o -name "*.manifest") artifact/buildinfo/
           mv -fv $(find ${{ env.SOURCES_PATH}}/bin/targets -type f) artifact/firmware/
-      - name: Upload Buildinfo
+      - name: 上传构建信息文件
         uses: actions/upload-artifact@v4
         with:
           name: OpenWrt_buildinfo
           path: artifact/buildinfo/
-      - name: Upload Firmware
+      - name: 上传固件文件
         uses: actions/upload-artifact@v4
         with:
           name: OpenWrt-${{ env.LATEST_STABLE_OPENWRT_VERSION }}-Firmware_x86-64
