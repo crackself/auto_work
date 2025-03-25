@@ -1,5 +1,4 @@
 dnsmasq-full
-fish
 nano
 
 curl
@@ -15,6 +14,7 @@ luci-i18n-firewall-zh-cn
 iw
 iwinfo
 tcpdump
+udpxy
 
 e100-firmware
 iwlwifi-firmware-ax210
