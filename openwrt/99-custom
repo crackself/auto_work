@@ -14,7 +14,7 @@ uci -q batch << EOI
   commit dockerd
 
   # 修改LAN地址为192.168.100.1
-  set network.lan.ipaddr='192.168.100.1'
+  set network.lan.ipaddr='192.168.2.1'
   commit network
   # uci命令结束
   EOI
