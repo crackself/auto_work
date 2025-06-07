@@ -24,3 +24,5 @@ pciutils
 kmod-inet-diag
 kmod-tun
 sing-box
+adguardhome
+ipset
