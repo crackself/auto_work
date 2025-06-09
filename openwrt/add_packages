@@ -9,6 +9,7 @@ luci
 luci-i18n-base-zh-cn
 luci-theme-material
 luci-i18n-nlbwmon-zh-cn
+luci-i18n-package-manager-zh-cn
 luci-i18n-firewall-zh-cn
 
 iw
@@ -26,3 +27,22 @@ kmod-tun
 sing-box
 adguardhome
 ipset
+
+v2ray-core
+v2ray-geoip
+v2ray-geosite
+v2ray-extra
+v2raya
+luci-app-v2raya
+luci-i18n-v2raya-zh-cn
+
+frpc
+frps
+luci-app-frpc
+luci-app-frps
+luci-i18n-frpc-zh-cn
+luci-i18n-frps-zh-cn
+
+cloudflared
+luci-app-cloudflared
+luci-i18n-cloudflared-zh-cn
