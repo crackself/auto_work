@@ -34,3 +34,15 @@ luci-app-frpc
 luci-app-frps
 luci-i18n-frpc-zh-cn
 luci-i18n-frps-zh-cn
+
+kmod-wireguard
+wireguard-tools
+luci-proto-wireguard
+
+ddns-scripts
+ddns-scripts-services
+luci-app-ddns
+luci-i18n-ddns-zh-cn
+
+luci-mod-dashboard
+luci-i18n-dashboard-zh-cn
