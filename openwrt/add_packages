@@ -39,7 +39,11 @@ kmod-wireguard
 wireguard-tools
 luci-proto-wireguard
 
+tailscale
+ethtool
+
 ddns-scripts
+ddns-scripts-cloudflare
 ddns-scripts-services
 luci-app-ddns
 luci-i18n-ddns-zh-cn
