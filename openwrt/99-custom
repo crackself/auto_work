@@ -10,8 +10,8 @@ uci -q batch << EOI
   commit dhcp
 
   # 允许外网访问docker内部网络
-  set dockerd.firewall.extra_iptables_args='--match conntrack ! --ctstate RELATED,ESTABLISHED'
-  commit dockerd
+  #set dockerd.firewall.extra_iptables_args='--match conntrack ! --ctstate RELATED,ESTABLISHED'
+  #commit dockerd
 
   # 修改LAN地址为192.168.100.1
   set network.lan.ipaddr='192.168.100.1'
