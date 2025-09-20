@@ -1,6 +1,6 @@
 dnsmasq-full
 nano
-
+bash
 curl
 wget-ssl
 wpad-openssl
@@ -39,7 +39,7 @@ kmod-wireguard
 wireguard-tools
 luci-proto-wireguard
 
-#tailscale
+tailscale
 ethtool
 
 ddns-scripts
