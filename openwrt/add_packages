@@ -27,6 +27,15 @@ kmod-tun
 sing-box
 adguardhome
 ipset
+ip-full
+kmod-nf-tproxy
+kmod-nft-tproxy
+kmod-nft-core
+kmod-nft-nat
+kmod-nfnetlink
+libnftnl
+libmnl
+nftables
 
 frpc
 frps
@@ -38,9 +47,6 @@ luci-i18n-frps-zh-cn
 kmod-wireguard
 wireguard-tools
 luci-proto-wireguard
-
-tailscale
-ethtool
 
 ddns-scripts
 ddns-scripts-cloudflare
