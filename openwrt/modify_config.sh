@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 调整root分区大小
-sed -i 's/^CONFIG_TARGET_ROOTFS_PARTSIZE=104$/CONFIG_TARGET_ROOTFS_PARTSIZE=1024/' .config
+sed -i 's/^CONFIG_TARGET_ROOTFS_PARTSIZE=104$/CONFIG_TARGET_ROOTFS_PARTSIZE=2048/' .config
 # 修改构建者信息
 sed -i 's/^CONFIG_KERNEL_BUILD_USER="builder"$/CONFIG_KERNEL_BUILD_USER="GithubAction"/' .config
 sed -i 's/^CONFIG_KERNEL_BUILD_DOMAIN="buildhost"$/CONFIG_KERNEL_BUILD_DOMAIN="Ubuntu"/' .config
