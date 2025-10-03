@@ -30,6 +30,7 @@ ipset
 ip-full
 kmod-nf-tproxy
 kmod-nft-tproxy
+kmod-nft-socket
 kmod-nft-core
 kmod-nft-nat
 kmod-nfnetlink
