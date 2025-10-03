@@ -35,7 +35,13 @@ kmod-nft-nat
 kmod-nfnetlink
 libnftnl
 libmnl
-nftables
+ca-bundle
+
+xray-core
+v2raya
+luci-i18n-v2raya-zh-cn
+v2ray-geoip
+v2ray-geosite
 
 frpc
 frps
