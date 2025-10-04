@@ -29,6 +29,7 @@ adguardhome
 ipset
 ip-full
 kmod-nf-tproxy
+kmod-nf-socket
 kmod-nft-tproxy
 kmod-nft-socket
 kmod-nft-core
