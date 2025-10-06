@@ -64,7 +64,3 @@ luci-i18n-ddns-zh-cn
 
 luci-mod-dashboard
 luci-i18n-dashboard-zh-cn
-
-smartdns
-luci-app-smartdns
-luci-i18n-smartdns-zh-cn
