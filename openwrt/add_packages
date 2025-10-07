@@ -16,6 +16,7 @@ iw
 iwinfo
 tcpdump
 udpxy
+ethtool
 
 e100-firmware
 iwlwifi-firmware-ax210
