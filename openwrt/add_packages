@@ -52,6 +52,10 @@ luci-app-frps
 luci-i18n-frpc-zh-cn
 luci-i18n-frps-zh-cn
 
+cloudflared
+luci-app-cloudflared
+luci-i18n-cloudflared-zh-cn
+
 kmod-wireguard
 wireguard-tools
 luci-proto-wireguard
@@ -64,3 +68,7 @@ luci-i18n-ddns-zh-cn
 
 luci-mod-dashboard
 luci-i18n-dashboard-zh-cn
+
+vnstat2
+luci-app-vnstat2
+luci-i18n-vnstat2-zh-cn
