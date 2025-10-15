@@ -76,3 +76,7 @@ luci-i18n-vnstat2-zh-cn
 
 luci-app-attendedsysupgrade
 luci-i18n-attendedsysupgrade-zh-cn
+
+pbr
+luci-app-pbr
+luci-i18n-pbr-zh-cn
