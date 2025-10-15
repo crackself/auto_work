@@ -73,3 +73,6 @@ luci-i18n-dashboard-zh-cn
 vnstat2
 luci-app-vnstat2
 luci-i18n-vnstat2-zh-cn
+
+luci-app-attendedsysupgrade
+luci-i18n-attendedsysupgrade-zh-cn
