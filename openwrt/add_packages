@@ -80,3 +80,7 @@ luci-i18n-attendedsysupgrade-zh-cn
 pbr
 luci-app-pbr
 luci-i18n-pbr-zh-cn
+
+natmap
+luci-app-natmap
+luci-i18n-natmap-zh-cn
