@@ -37,16 +37,12 @@ libnftnl
 libmnl
 ca-bundle
 
-# adguardhomeDNS广告屏蔽
 adguardhome
 
-# sing-box代理组建
 sing-box
 
-# xray代理组建
 xray-core
 
-# frp远程穿透
 frpc
 frps
 luci-app-frpc
@@ -54,47 +50,38 @@ luci-app-frps
 luci-i18n-frpc-zh-cn
 luci-i18n-frps-zh-cn
 
-# cloudflared隧道
 cloudflared
 luci-app-cloudflared
 luci-i18n-cloudflared-zh-cn
 
-# WireGuard隧道
 kmod-wireguard
 wireguard-tools
 luci-proto-wireguard
 
-# 动态ddns
 ddns-scripts
 ddns-scripts-cloudflare
 ddns-scripts-services
 luci-app-ddns
 luci-i18n-ddns-zh-cn
 
-# 主页面板
 luci-mod-dashboard
 luci-i18n-dashboard-zh-cn
 
-# 流量统计
 vnstat2
 luci-app-vnstat2
 luci-i18n-vnstat2-zh-cn
 
-# 网络数据统计
 nlbwmon
 luci-app-nlbwmon
 luci-i18n-nlbwmon-zh-cn
 
-# 值守式系统更新
 luci-app-attendedsysupgrade
 luci-i18n-attendedsysupgrade-zh-cn
 
-# 策略路由
 pbr
 luci-app-pbr
 luci-i18n-pbr-zh-cn
 
-# nat内网穿透
 natmap
 luci-app-natmap
 luci-i18n-natmap-zh-cn
