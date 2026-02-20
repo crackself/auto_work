@@ -19,6 +19,20 @@ jobs:
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
+      - name: 检测最新稳定版版本号
+        run: |
+          # 通过curl查找最新版本号
+          stable_version=$(curl -s https://downloads.openwrt.org/ | grep -oP '(?<=releases/)[^/]+(?=/targets)' | head -n 1)
+          
+          echo "The latest stable OpenWrt version is: $stable_version"
+          
+          # 将版本号存入 GitHub Actions 环境变量
+          echo "LATEST_STABLE_OPENWRT_VERSION=$stable_version" >> $GITHUB_ENV
+
+      - name: 显示最新版本号
+        run: |
+          echo "The latest stable OpenWrt version is ${{ env.LATEST_STABLE_OPENWRT_VERSION }}"
+
       - name: 磁盘空间清理
         env:
           DEBIAN_FRONTEND: noninteractive
@@ -56,20 +70,6 @@ jobs:
         with:
           # 指定分支 留空使用默认分支
           ref: ''
-
-      - name: 检测最新稳定版版本号
-        run: |
-          # 通过curl查找最新版本号
-          stable_version=$(curl -s https://downloads.openwrt.org/ | grep -oP '(?<=releases/)[^/]+(?=/targets)' | head -n 1)
-          
-          echo "The latest stable OpenWrt version is: $stable_version"
-          
-          # 将版本号存入 GitHub Actions 环境变量
-          echo "LATEST_STABLE_OPENWRT_VERSION=$stable_version" >> $GITHUB_ENV
-
-      - name: 显示最新版本号
-        run: |
-          echo "The latest stable OpenWrt version is ${{ env.LATEST_STABLE_OPENWRT_VERSION }}"
 
       - name: 下载Image Builder工具
         run: |
