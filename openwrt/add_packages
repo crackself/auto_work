@@ -40,15 +40,11 @@ ca-bundle
 adguardhome
 
 sing-box
-
 xray-core
 
-frpc
-frps
-luci-app-frpc
-luci-app-frps
-luci-i18n-frpc-zh-cn
-luci-i18n-frps-zh-cn
+xfrpc
+luci-app-xfrpc
+luci-i18n-xfrpc-zh-cn
 
 cloudflared
 luci-app-cloudflared
