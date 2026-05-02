@@ -6,3 +6,6 @@
 - 手动运行**`Actions`**触发
 - 过程中自动检测[OpenWrt发布页面](https://downloads.openwrt.org/releases/)，确保生成的是最新稳定版
 - 输出文件通过**`Actions`**页面下载
+
+### 自定义配置文件植入
+- https://openwrt.org/docs/guide-user/additional-software/imagebuilder#custom_files
