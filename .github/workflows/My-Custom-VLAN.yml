@@ -135,12 +135,8 @@ jobs:
           pwd
 
       - name: 复制OpenWrt系统初始化脚本
-        run: |
-          mv -v openwrt/my-network custom-files/etc/config/
-          echo "Check custom-files/etc/config/ files"
-          ls custom-files/etc/config
-          
-          mv -v openwrt/99-custom custom-files/etc/uci-defaults/
+        run: | 
+          mv -v openwrt/99-vlan-custom custom-files/etc/uci-defaults/99-custom
           echo "Check custom-files/etc/uci-defaults/ files"
           ls custom-files/etc/uci-defaults
 
