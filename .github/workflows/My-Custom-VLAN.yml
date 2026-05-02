@@ -2,7 +2,7 @@
 # <https://github.com/crackself/auto_work>
 # Copyright (C) 2024 crackself
 #
-name: OpenWrt_Image_Builder_For_x86-64
+name: Custom-VLAN-OpenWrt_Image_Builder_For_x86-64
 
 on:
   workflow_dispatch:  # 允许手动触发工作流
