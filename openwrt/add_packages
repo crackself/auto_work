@@ -16,6 +16,8 @@ iwinfo
 tcpdump
 udpxy
 ethtool
+irqbalance
+iperf3
 
 e100-firmware
 iwlwifi-firmware-ax210
@@ -71,12 +73,12 @@ nlbwmon
 luci-app-nlbwmon
 luci-i18n-nlbwmon-zh-cn
 
-luci-app-attendedsysupgrade
-luci-i18n-attendedsysupgrade-zh-cn
+# luci-app-attendedsysupgrade
+# luci-i18n-attendedsysupgrade-zh-cn
 
-pbr
-luci-app-pbr
-luci-i18n-pbr-zh-cn
+# pbr
+# luci-app-pbr
+# luci-i18n-pbr-zh-cn
 
 natmap
 luci-app-natmap
