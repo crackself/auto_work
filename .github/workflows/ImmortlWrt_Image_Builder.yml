@@ -1,0 +1,97 @@
+# .github/workflows/New_Image_Builder.yml
+name: ImmortalWrt_Image_Builder_For_x86-64
+
+on:
+  workflow_dispatch:  # 允许手动触发
+  # schedule:
+  #   - cron: '00 03 * * 1'  # 可选：每周一凌晨执行
+
+jobs:
+  Build_ImmortalWrt:
+    name: 快速生成 ImmortalWrt x86_64 固件
+    runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id
+
+    steps:
+      - name: 检测最新稳定版版本号
+        run: |
+          stable_version=$(curl -s https://downloads.immortalwrt.org/releases/ | grep -oP '(?<=releases/)[^/]+(?=/targets)' | head -n 1)
+          echo "The latest stable ImmortalWrt version is: $stable_version"
+          echo "LATEST_STABLE_IMMORTALWRT_VERSION=$stable_version" >> $GITHUB_ENV
+
+      - name: 显示最新版本号
+        run: echo "The latest stable ImmortalWrt version is ${{ env.LATEST_STABLE_IMMORTALWRT_VERSION }}"
+
+      - name: 磁盘空间清理
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          docker rmi -f $(docker images -q) || true
+          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /usr/local/lib/android
+          sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
+
+      - name: 安装依赖工具包
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo -E apt-get update
+          sudo -E apt-get -y install build-essential clang flex bison g++ gawk gcc-multilib g++-multilib gettext git libncurses5-dev libssl-dev python3-setuptools rsync swig unzip zlib1g-dev file wget zstd
+          sudo -E apt-get -y autoremove --purge
+          sudo -E apt-get clean
+          df -h
+
+      - name: Git获取源码
+        uses: actions/checkout@v4
+
+      - name: 下载 ImmortalWrt Image Builder
+        run: |
+          VERSION=${{ env.LATEST_STABLE_IMMORTALWRT_VERSION }}
+          wget https://downloads.immortalwrt.org/releases/\( {VERSION}/targets/x86/64/immortalwrt-imagebuilder- \){VERSION}-x86-64.Linux-x86_64.tar.zst
+          ls -lh immortalwrt-imagebuilder-${VERSION}-x86-64.Linux-x86_64.tar.zst
+          echo "EXT=zst" >> $GITHUB_ENV
+          echo "SOURCES_PATH=immortalwrt-imagebuilder-${VERSION}-x86-64.Linux-x86_64" >> $GITHUB_ENV
+
+      - name: 解压 Image Builder
+        run: |
+          tar -I zstd -x -f immortalwrt-imagebuilder-*.tar.zst
+          rm immortalwrt-imagebuilder-*.tar.zst
+          ls -la
+
+      - name: 准备 Custom Files
+        run: |
+          mkdir -pv custom-files/etc/uci-defaults
+          mv -v openwrt/99-custom custom-files/etc/uci-defaults/ || true
+
+      - name: 设置预装软件包
+        run: |
+          content=$(cat openwrt/del_packages openwrt/add_packages 2>/dev/null | tr '\n' ' ' || echo "")
+          echo "PACKAGES=$content" >> $GITHUB_ENV
+
+      - name: 修改配置文件
+        run: |
+          cd ${{ env.SOURCES_PATH }}
+          mv ../openwrt/modify_config.sh . || true
+          bash modify_config.sh || true
+
+      - name: 生成固件
+        run: |
+          cd ${{ env.SOURCES_PATH }}
+          make image PACKAGES="${{ env.PACKAGES }}" FILES="../custom-files"
+
+      - name: 准备 Artifact
+        run: |
+          mkdir -p artifact/{firmware,buildinfo}
+          mv -fv $(find ${{ env.SOURCES_PATH}}/bin/targets -type f -name "*.buildinfo" -o -name "*.manifest") artifact/buildinfo/ 2>/dev/null || true
+          mv -fv $(find ${{ env.SOURCES_PATH}}/bin/targets -type f) artifact/firmware/ 2>/dev/null || true
+
+      - name: 上传构建信息
+        uses: actions/upload-artifact@v4
+        with:
+          name: ImmortalWrt_buildinfo
+          path: artifact/buildinfo/
+
+      - name: 上传固件
+        uses: actions/upload-artifact@v4
+        with:
+          name: ImmortalWrt-${{ env.LATEST_STABLE_IMMORTALWRT_VERSION }}-x86-64
+          path: artifact/firmware/
