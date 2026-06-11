@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: 检测最新稳定版版本号
         run: |
-          stable_version=$(curl -s https://downloads.immortalwrt.org/releases/ | grep -oP '(?<=releases/)[^/]+(?=/targets)' | head -n 1)
+          stable_version=$(curl -s https://downloads.immortalwrt.org/ | grep -oP '(?<=releases/)[^/]+(?=/targets)' | head -n 1)
           echo "The latest stable ImmortalWrt version is: $stable_version"
           echo "LATEST_STABLE_IMMORTALWRT_VERSION=$stable_version" >> $GITHUB_ENV
 
