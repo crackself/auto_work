@@ -46,7 +46,7 @@ jobs:
       - name: 下载 ImmortalWrt Image Builder
         run: |
           VERSION=${{ env.LATEST_STABLE_IMMORTALWRT_VERSION }}
-          wget https://downloads.immortalwrt.org/releases/\( {VERSION}/targets/x86/64/immortalwrt-imagebuilder- \){VERSION}-x86-64.Linux-x86_64.tar.zst
+          wget https://downloads.immortalwrt.org/releases/\{{VERSION}/targets/x86/64/immortalwrt-imagebuilder- \}{VERSION}-x86-64.Linux-x86_64.tar.zst
           ls -lh immortalwrt-imagebuilder-${VERSION}-x86-64.Linux-x86_64.tar.zst
           echo "EXT=zst" >> $GITHUB_ENV
           echo "SOURCES_PATH=immortalwrt-imagebuilder-${VERSION}-x86-64.Linux-x86_64" >> $GITHUB_ENV
