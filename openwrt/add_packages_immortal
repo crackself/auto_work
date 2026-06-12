@@ -39,13 +39,6 @@ libnftnl
 libmnl
 ca-bundle
 
-adguardhome
-
-sing-box
-xray-core
-luci-app-homeproxy
-luci-i18n-homeproxy-zh-cn
-
 xfrpc
 luci-app-xfrpc
 luci-i18n-xfrpc-zh-cn
@@ -85,3 +78,14 @@ luci-i18n-nlbwmon-zh-cn
 natmap
 luci-app-natmap
 luci-i18n-natmap-zh-cn
+
+adguardhome
+
+sing-box
+xray-core
+
+luci-app-homeproxy
+luci-i18n-homeproxy-zh-cn
+
+luci-app-mosdns
+luci-i18n-mosdns-zh-cn
