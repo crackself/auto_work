@@ -2,7 +2,7 @@
 # <https://github.com/crackself/auto_work>
 # Copyright (C) 2024 crackself
 #
-name: ImmortlWrt_Image_Builder_For_x86-64
+name: ImmortalWrt_Image_Builder_For_x86-64
 
 on:
   workflow_dispatch:  # 允许手动触发工作流
@@ -13,7 +13,7 @@ on:
 jobs:
   Build_Openwrt:
 
-    name: 快速生成ImmortlWrt x86_64 固件
+    name: 快速生成ImmortalWrt x86_64 固件
     runs-on: ubuntu-latest
     # https://github.com/actions/runner-images#available-images
     if: github.event.repository.owner.id == github.event.sender.id
@@ -22,16 +22,16 @@ jobs:
       - name: 检测最新稳定版版本号
         run: |
           # 通过curl查找最新版本号
-          stable_version=$(curl -s https://downloads.immortlwrt.org/ | grep -oP '(?<=releases/)[^/]+(?=/targets)' | head -n 1)
+          stable_version=$(curl -s https://downloads.immortalwrt.org/ | grep -oP '(?<=releases/)[^/]+(?=/targets)' | head -n 1)
           
-          echo "The latest stable ImmortlWrt version is: $stable_version"
+          echo "The latest stable ImmortalWrt version is: $stable_version"
           
           # 将版本号存入 GitHub Actions 环境变量
           echo "LATEST_STABLE_VERSION=$stable_version" >> $GITHUB_ENV
 
       - name: 显示最新版本号
         run: |
-          echo "The latest stable OpenWrt version is ${{ env.LATEST_STABLE_VERSION }}"
+          echo "The latest stable ImmortalWrt version is ${{ env.LATEST_STABLE_VERSION }}"
 
       - name: 磁盘空间清理
         env:
@@ -80,7 +80,7 @@ jobs:
           major_version=$(echo "${{ env.LATEST_STABLE_VERSION }}" | cut -d'.' -f1)
           minor_version=$(echo "${{ env.LATEST_STABLE_VERSION }}" | cut -d'.' -f2)
           
-          # 判断 OpenWrt 版本是否 >= 24.10
+          # 判断 ImmortalWrt 版本是否 >= 24.10
           if [ "$major_version" -gt 24 ] || { [ "$major_version" -eq 24 ] && [ "$minor_version" -ge 10 ]; }; then
             EXT="tar.zst"
           else
@@ -94,11 +94,11 @@ jobs:
           
           # 使用 wget下载
           echo "Downloading Image_Builder tar file"
-          wget https://downloads.immortlwrt.org/releases/${{ env.LATEST_STABLE_VERSION }}/targets/x86/64/immortlwrt-imagebuilder-${{ env.LATEST_STABLE_VERSION }}-x86-64.Linux-x86_64.$EXT
+          wget https://downloads.immortalwrt.org/releases/${{ env.LATEST_STABLE_VERSION }}/targets/x86/64/immortalwrt-imagebuilder-${{ env.LATEST_STABLE_VERSION }}-x86-64.Linux-x86_64.$EXT
           
           # 确保文件已成功下载
           echo "Show downloaded file"
-          ls -lh immortlwrt-imagebuilder-${{ env.LATEST_STABLE_VERSION }}-x86-64.Linux-x86_64.$EXT
+          ls -lh immortalwrt-imagebuilder-${{ env.LATEST_STABLE_VERSION }}-x86-64.Linux-x86_64.$EXT
 
       - name: 解压Image Builder
         run: |
@@ -108,7 +108,7 @@ jobs:
           if [ "$EXT" == "tar.zst" ]; then
             tar -I zstd -x -f immortlwrt-imagebuilder-${{ env.LATEST_STABLE_VERSION }}-x86-64.Linux-x86_64.$EXT
           elif [ "$EXT" == "tar.xz" ]; then
-            tar -J -x -f immortlwrt-imagebuilder-${{ env.LATEST_STABLE_VERSION }}-x86-64.Linux-x86_64.$EXT
+            tar -J -x -f immortalwrt-imagebuilder-${{ env.LATEST_STABLE_VERSION }}-x86-64.Linux-x86_64.$EXT
           else
             echo "Unsupported EXT: $EXT"
             exit 1
@@ -123,10 +123,10 @@ jobs:
           ls
 
           echo "Remove tarball after untar"
-          rm immortlwrt-imagebuilder-${{ env.LATEST_STABLE_VERSION }}-x86-64.Linux-x86_64.$EXT
+          rm immortalwrt-imagebuilder-${{ env.LATEST_STABLE_VERSION }}-x86-64.Linux-x86_64.$EXT
 
           # 将文件路径存入 GitHub Actions 环境变量
-          echo "SOURCES_PATH=immortlwrt-imagebuilder-${{ env.LATEST_STABLE_VERSION }}-x86-64.Linux-x86_64" >> $GITHUB_ENV
+          echo "SOURCES_PATH=immortalwrt-imagebuilder-${{ env.LATEST_STABLE_VERSION }}-x86-64.Linux-x86_64" >> $GITHUB_ENV
 
       - name: 准备Custom Files文件
         run: |
@@ -192,10 +192,10 @@ jobs:
       - name: 上传构建信息文件
         uses: actions/upload-artifact@v4
         with:
-          name: ImmortlWrt_buildinfo
+          name: ImmortalWrt_buildinfo
           path: artifact/buildinfo/
       - name: 上传固件文件
         uses: actions/upload-artifact@v4
         with:
-          name: ImmortlWrt-${{ env.LATEST_STABLE_VERSION }}-Firmware_x86-64
+          name: ImmortalWrt-${{ env.LATEST_STABLE_VERSION }}-Firmware_x86-64
           path: artifact/firmware
