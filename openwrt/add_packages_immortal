@@ -87,5 +87,9 @@ xray-core
 luci-app-homeproxy
 luci-i18n-homeproxy-zh-cn
 
+mosdns
+v2ray-geoip
+v2ray-geosite
+v2dat
 luci-app-mosdns
 luci-i18n-mosdns-zh-cn
