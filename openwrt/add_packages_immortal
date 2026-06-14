@@ -82,7 +82,7 @@ luci-i18n-natmap-zh-cn
 
 adguardhome
 luci-app-adguardhome
-luci-i18n-adguardhome-zh-cn
+#luci-i18n-adguardhome-zh-cn
 
 sing-box
 xray-core
