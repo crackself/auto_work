@@ -21,13 +21,17 @@ iperf3
 
 e100-firmware
 iwlwifi-firmware-ax210
-kmod-iwlwifi
 
 pciutils
-kmod-inet-diag
-kmod-tun
 ipset
 ip-full
+libnftnl
+libmnl
+ca-bundle
+
+kmod-iwlwifi
+kmod-inet-diag
+kmod-tun
 kmod-nf-tproxy
 kmod-nf-socket
 kmod-nft-tproxy
@@ -35,9 +39,19 @@ kmod-nft-socket
 kmod-nft-core
 kmod-nft-nat
 kmod-nfnetlink
-libnftnl
-libmnl
-ca-bundle
+kmod-nf-nathelper
+kmod-nft-offload
+kmod-nf-ipt6
+
+iptables-nft
+iptables-mod-filter
+iptables-mod-ipmark
+
+ip6tables-nft
+ip6tables-mod-nat
+ip6tables-extra
+ip6tables-nft
+ip6tables-mod-nat
 
 adguardhome
 luci-app-adguardhome
@@ -84,3 +98,7 @@ luci-i18n-nlbwmon-zh-cn
 natmap
 luci-app-natmap
 luci-i18n-natmap-zh-cn
+
+smartdns
+luci-app-smartdns
+luci-i18n-smartdns-zh-cn
