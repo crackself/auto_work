@@ -8,7 +8,6 @@ wpad-openssl
 luci
 luci-i18n-base-zh-cn
 #luci-theme-material
-luci-theme-argon
 luci-i18n-package-manager-zh-cn
 luci-i18n-firewall-zh-cn
 
@@ -22,13 +21,17 @@ iperf3
 
 e100-firmware
 iwlwifi-firmware-ax210
-kmod-iwlwifi
 
 pciutils
-kmod-inet-diag
-kmod-tun
 ipset
 ip-full
+libnftnl
+libmnl
+ca-bundle
+
+kmod-iwlwifi
+kmod-inet-diag
+kmod-tun
 kmod-nf-tproxy
 kmod-nf-socket
 kmod-nft-tproxy
@@ -36,9 +39,25 @@ kmod-nft-socket
 kmod-nft-core
 kmod-nft-nat
 kmod-nfnetlink
-libnftnl
-libmnl
-ca-bundle
+kmod-nf-nathelper
+kmod-nft-offload
+kmod-nf-ipt6
+
+iptables-nft
+iptables-mod-filter
+iptables-mod-ipmark
+
+ip6tables-nft
+ip6tables-mod-nat
+ip6tables-extra
+ip6tables-nft
+ip6tables-mod-nat
+
+adguardhome
+luci-app-adguardhome
+
+sing-box
+xray-core
 
 xfrpc
 luci-app-xfrpc
@@ -80,12 +99,9 @@ natmap
 luci-app-natmap
 luci-i18n-natmap-zh-cn
 
-adguardhome
-luci-app-adguardhome
-#luci-i18n-adguardhome-zh-cn
-
-sing-box
-xray-core
+smartdns
+luci-app-smartdns
+luci-i18n-smartdns-zh-cn
 
 luci-app-homeproxy
 luci-i18n-homeproxy-zh-cn
