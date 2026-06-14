@@ -7,7 +7,8 @@ wpad-openssl
 
 luci
 luci-i18n-base-zh-cn
-luci-theme-material
+#luci-theme-material
+luci-theme-argon
 luci-i18n-package-manager-zh-cn
 luci-i18n-firewall-zh-cn
 
@@ -80,9 +81,13 @@ luci-app-natmap
 luci-i18n-natmap-zh-cn
 
 adguardhome
+luci-app-adguardhome
+luci-i18n-adguardhome-zh-cn
 
 sing-box
 xray-core
 
 luci-app-homeproxy
 luci-i18n-homeproxy-zh-cn
+
+mosdns
