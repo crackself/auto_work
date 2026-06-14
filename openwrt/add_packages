@@ -7,7 +7,7 @@ wpad-openssl
 
 luci
 luci-i18n-base-zh-cn
-luci-theme-material
+#luci-theme-material
 luci-i18n-package-manager-zh-cn
 luci-i18n-firewall-zh-cn
 
@@ -40,6 +40,7 @@ libmnl
 ca-bundle
 
 adguardhome
+luci-app-adguardhome
 
 sing-box
 xray-core
