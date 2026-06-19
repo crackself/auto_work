@@ -99,6 +99,6 @@ natmap
 luci-app-natmap
 luci-i18n-natmap-zh-cn
 
-smartdns
-luci-app-smartdns
-luci-i18n-smartdns-zh-cn
+# smartdns
+# luci-app-smartdns
+# luci-i18n-smartdns-zh-cn
