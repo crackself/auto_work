@@ -71,6 +71,7 @@ kmod-wireguard
 wireguard-tools
 luci-proto-wireguard
 
+bind-host
 ddns-scripts
 ddns-scripts-cloudflare
 ddns-scripts-services
