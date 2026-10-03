@@ -164,6 +164,47 @@ jobs:
           echo "Execute Modify_config"
           bash modify_config.sh
 
+      - name: 集成 luci-app-mosdns (Method 2: Image Builder 模式)
+        run: |
+          # 1. 进入 Image Builder 目录
+          cd ${{ env.SOURCES_PATH }}
+          mkdir -p packages
+
+          # 2. 根据 OpenWrt 版本决定下载后缀 (.ipk 还是 .apk)
+          # 沿用你脚本中已有的版本判断逻辑
+          major_version=$(echo "${{ env.LATEST_STABLE_OPENWRT_VERSION }}" | cut -d'.' -f1)
+          minor_version=$(echo "${{ env.LATEST_STABLE_OPENWRT_VERSION }}" | cut -d'.' -f2)
+          
+          if [ "$major_version" -gt 24 ] || { [ "$major_version" -eq 24 ] && [ "$minor_version" -ge 10 ]; }; then
+            EXT="apk"
+          else
+            EXT="ipk"
+          fi
+          echo "Detected extension for packages: $EXT"
+
+          # 3. 从 sbwml 的 GitHub Release 自动获取并下载所有相关的安装包
+          # 我们直接抓取该 Release 下所有以 $EXT 结尾的下载链接
+          echo "Fetching download URLs from GitHub API..."
+          URLS=$(curl -s https://api.github.com/repos/sbwml/luci-app-mosdns/releases/latest | grep "browser_download_url" | grep "$EXT" | cut -d '"' -f 4)
+
+          if [ -z "$URLS" ]; then
+            echo "Error: No $EXT packages found in the latest release!"
+            exit 1
+          fi
+
+          echo "Starting download..."
+          for url in $URLS; do
+            echo "Downloading: $url"
+            wget -P packages/ "$url"
+          done
+
+          # 4. 将包名添加到环境变量 PACKAGES 中，以便后续 make image 使用
+          # 我们需要把这三个核心包名加进去
+          echo "Appending mosdns packages to PACKAGES environment..."
+          echo "PACKAGES=${{ env.PACKAGES }} luci-app-mosdns mosdns v2ray-geodata" >> $GITHUB_ENV
+          
+          echo "Current combined PACKAGES: ${{ env.PACKAGES }}"
+
       - name: 生成固件中...
         run: |
           echo "Check current path"
