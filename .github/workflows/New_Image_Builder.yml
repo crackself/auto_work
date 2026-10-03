@@ -164,7 +164,7 @@ jobs:
           echo "Execute Modify_config"
           bash modify_config.sh
 
-      - name: 集成 luci-app-mosdns (Method 2: Image Builder 模式)
+      - name: add modsdns
         run: |
           # 1. 进入 Image Builder 目录
           cd ${{ env.SOURCES_PATH }}
