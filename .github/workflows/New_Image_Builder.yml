@@ -164,13 +164,13 @@ jobs:
           echo "Execute Modify_config"
           bash modify_config.sh
 
-      - name: add modsdns
+      - name: 集成 luci-app-mosdns (Method 2: Image Builder 模式)
         run: |
-          # 1. 进入 Image Builder 目录
+          # 1. 进入 Image Builder 目录并创建 packages 文件夹
           cd ${{ env.SOURCES_PATH }}
           mkdir -p packages
 
-          # 2. 根据 OpenWrt 版本决定下载后缀 (.ipk 还是 .apk)
+          # 2. 根据 OpenWrt 版本决定包格式 (.ipk 还是 .apk)
           major_version=$(echo "${{ env.LATEST_STABLE_OPENWRT_VERSION }}" | cut -d'.' -f1)
           minor_version=$(echo "${{ env.LATEST_STABLE_OPENWRT_VERSION }}" | cut -d'.' -f2)
           
@@ -179,27 +179,38 @@ jobs:
           else
             EXT="ipk"
           fi
-          echo "Detected extension for packages: $EXT"
+          echo "Target package format: $EXT"
 
-          # 3. 仅抓取 x86_64 和 all 架构的包 (修复了多架构冲突 Bug)
-          echo "Fetching download URLs from GitHub API..."
-          URLS=$(curl -s https://api.github.com/repos/sbwml/luci-app-mosdns/releases/latest | grep "browser_download_url" | grep "$EXT" | grep -E "x86_64|all" | cut -d '"' -f 4)
+          # 3. 从 GitHub API 获取最新 Release 中，包含 $EXT 和 x86_64 的 .tar.gz 下载链接
+          echo "Fetching latest release assets from GitHub API..."
+          TAR_URL=$(curl -s https://api.github.com/repos/sbwml/luci-app-mosdns/releases | jq -r '.[0].assets[].browser_download_url' | grep "tar.gz" | grep "$EXT" | grep "x86_64" | head -n 1)
 
-          if [ -z "$URLS" ]; then
-            echo "Error: No $EXT packages found in the latest release!"
+          if [ -z "$TAR_URL" ]; then
+            echo "Error: Could not find matching .tar.gz asset for $EXT and x86_64!"
             exit 1
           fi
 
-          echo "Starting download..."
-          for url in $URLS; do
-            echo "Downloading: $url"
-            wget -P packages/ "$url"
-          done
+          echo "Target tarball URL: $TAR_URL"
 
-          # 检查下载的文件
+          # 4. 下载压缩包
+          echo "Downloading compressed package..."
+          wget -O mosdns_packages.tar.gz "$TAR_URL"
+
+          # 5. 解压并将释放出的 .ipk/.apk 文件移动到 packages 目录
+          echo "Extracting packages..."
+          tar -zxf mosdns_packages.tar.gz
+          
+          # 递归寻找解压出来的 ipk/apk 并移动到 packages/
+          find . -maxdepth 2 -name "*.$EXT" -exec mv -v {} packages/ \;
+
+          # 6. 清理临时压缩包
+          rm -f mosdns_packages.tar.gz
+
+          # 7. 打印下载解压后的结果，便于在日志中验证
+          echo "Successfully prepared packages:"
           ls -lh packages/
 
-          # 4. 追加包名到 PACKAGES 环境变量
+          # 8. 追加包名到 PACKAGES 环境变量
           echo "Appending mosdns packages to PACKAGES environment..."
           echo "PACKAGES=${{ env.PACKAGES }} luci-app-mosdns mosdns v2ray-geodata" >> $GITHUB_ENV
 
