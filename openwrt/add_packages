@@ -85,6 +85,8 @@ vnstat2
 luci-app-vnstat2
 luci-i18n-vnstat2-zh-cn
 
+netdata
+
 nlbwmon
 luci-app-nlbwmon
 luci-i18n-nlbwmon-zh-cn
