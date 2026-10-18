@@ -105,3 +105,5 @@ luci-i18n-natmap-zh-cn
 #smartdns
 #luci-app-smartdns
 #luci-i18n-smartdns-zh-cn
+
+openssh-sftp-server
